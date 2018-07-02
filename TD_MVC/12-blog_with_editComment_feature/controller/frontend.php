@@ -5,15 +5,15 @@ require_once('model/PostManager.php');
 require_once('model/CommentManager.php');
 
 function listPosts() {
-    $postManager = new PostManager(); // Création d'un objet
-    $posts = $postManager->getPosts(); // Appel d'une fonction de cet objet
+    $postManager = new \OpenClassrooms\Blog\Model\PostManager();
+    $posts = $postManager->getPosts();
 
     require('view/frontend/listPostsView.php');
 }
 
 function post() {
-    $postManager = new PostManager();
-    $commentManager = new CommentManager();
+    $postManager = new \OpenClassrooms\Blog\Model\PostManager();
+    $commentManager = new \OpenClassrooms\Blog\Model\CommentManager();
 
     $post = $postManager->getPost($_GET['id']);
     $comments = $commentManager->getComments($_GET['id']);
@@ -22,7 +22,8 @@ function post() {
 }
 
 function addComment($postId, $author, $comment) {
-    $commentManager = new CommentManager();
+    $commentManager = new \OpenClassrooms\Blog\Model\CommentManager();
+
     $affectedLines = $commentManager->postComment($postId, $author, $comment);
 
     if ($affectedLines === false) {
@@ -33,14 +34,17 @@ function addComment($postId, $author, $comment) {
     }
 }
 
-function editComment($postID, $comment) {
-    $commentManager = new CommentManager();
-    $affectedLines = $commentManager->editComment($postId, $comment);
+function editComment($postId, $commentId) {
+    $postManager = new \OpenClassrooms\Blog\Model\PostManager();
+    $commentManager = new \OpenClassrooms\Blog\Model\CommentManager();
+
+    $post = $postManager->getPost($_GET['postId']);
+    $comments = $commentManager->getComments($_GET['postId']);
     
-    if ($affectedLines === false) {
-        throw new Exception('Impossible d\'éditer le commentaire !');
-    }
-    else {
-        header('Location: index.php?action=post&id=' . $postId);
-    }
+    require('view/frontend/editCommentView.php');
+}
+
+function updateComment($postId, $comment) {
+    $commentManager = new \OpenClassrooms\Blog\Model\CommentManager();
+    $updatedComment = $commentManager->updateComment($_GET['commentId'], $_POST['comment']);
 }
